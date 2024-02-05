@@ -1,0 +1,17 @@
+<jaxb:bindings xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb" xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+               xmlns:xs="http://www.w3.org/2001/XMLSchema"
+               version="3.0"
+               jaxb:extensionBindingPrefixes="xjc">
+
+    <!-- конвертация объектов xs:date и xs:dateTime в объекты java.time.* -->
+    <jaxb:globalBindings>
+        <xjc:simple/>
+        <xjc:serializable uid="-1"/>
+        <jaxb:javaType name="java.time.LocalDate" xmlType="xs:date"
+                       parseMethod="com.rxvlvxr.clinic.utils.DataTypeConverter.parseDate"
+                       printMethod="com.rxvlvxr.clinic.utils.DataTypeConverter.printDate"/>
+        <jaxb:javaType name="java.time.LocalDateTime" xmlType="xs:dateTime"
+                       parseMethod="com.rxvlvxr.clinic.utils.DataTypeConverter.parseDateTime"
+                       printMethod="com.rxvlvxr.clinic.utils.DataTypeConverter.printDateTime"/>
+    </jaxb:globalBindings>
+</jaxb:bindings>

@@ -1,0 +1,64 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="http://clinic.rxvlvxr.com"
+           targetNamespace="http://clinic.rxvlvxr.com"
+           elementFormDefault="qualified">
+    <!-- объект (почти) автоматического создания талонов -->
+    <xs:complexType name="autoCreation">
+        <xs:sequence>
+            <xs:element name="dateFrom" type="xs:date"/>
+            <xs:element name="durationInMin" type="xs:int"/>
+            <xs:element name="daysAmount" type="xs:int"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- объект для генерации расписания по правилам -->
+    <xs:complexType name="appointmentRules">
+        <xs:sequence>
+            <xs:element name="doctorId" type="xs:long"/>
+            <xs:element name="dateTimeFrom" type="xs:dateTime"/>
+            <xs:element name="durationInMin" type="xs:int"/>
+            <xs:element name="appointmentsAmount" type="xs:int"/>
+            <xs:element name="clearBefore" type="xs:boolean"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- объект для ответа сервера -->
+    <xs:complexType name="serviceStatus">
+        <xs:sequence>
+            <xs:element name="status" type="xs:string"/>
+            <xs:element name="message" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- request объекта autoCreation -->
+    <xs:element name="autoGenerateRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="autoCreation" type="tns:autoCreation"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <!-- response после запроса -->
+    <xs:element name="autoGenerateResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="serviceStatus" type="tns:serviceStatus"/>
+                <xs:element name="autoCreation" type="tns:autoCreation"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <!-- request объекта для создания талонов по переданным правилам -->
+    <xs:element name="generateByRulesRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="appointmentsRules" type="tns:appointmentRules"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <!-- response после запроса -->
+    <xs:element name="generateByRulesResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="serviceStatus" type="tns:serviceStatus"/>
+                <xs:element name="appointmentsRules" type="tns:appointmentRules"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
