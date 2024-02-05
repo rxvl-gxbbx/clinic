@@ -65,6 +65,7 @@ public class PatientService {
         Patient existed = optionalPatient.get();
 
         updatedPatient.setId(existed.getId());
+        updatedPatient.setUuid(uuid);
         existed.getAppointments().forEach(appointment -> appointment.setPatient(updatedPatient));
         existed.getAppointments().clear();
 

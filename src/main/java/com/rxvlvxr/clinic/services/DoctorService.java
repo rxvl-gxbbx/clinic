@@ -67,6 +67,7 @@ public class DoctorService {
 
         optional.ifPresent(existedDoctor -> {
             updatedDoctor.setId(existedDoctor.getId());
+            updatedDoctor.setUuid(uuid);
             existedDoctor.getAppointments().forEach(appointment -> appointment.setDoctor(updatedDoctor));
             existedDoctor.getAppointments().clear();
         });

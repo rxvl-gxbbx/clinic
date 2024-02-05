@@ -5,6 +5,7 @@ import com.rxvlvxr.clinic.models.Shift;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 public class ShiftUtil {
     /**
@@ -39,5 +40,23 @@ public class ShiftUtil {
         else end = fromDate.atTime(23, 0);
 
         return end;
+    }
+
+    /**
+     * метод проверяющий доступно ли время для записи к врачу
+     *
+     * @param dateTimeFrom передаем время, которое ввели через сервис (на нем будет проходить валидация)
+     * @param doctor       передаем объект врача, чтобы узнать смену в которой он работает
+     * @return возвращает объект типа boolean: true = запись доступна, false = запись недоступна
+     */
+    public static boolean isAvailable(LocalDateTime dateTimeFrom, Doctor doctor) {
+        boolean available = !doctor.getShift().equals(Shift.MORNING) || (!dateTimeFrom.isBefore(dateTimeFrom.truncatedTo(ChronoUnit.DAYS).plusHours(7)) && !dateTimeFrom.isAfter(dateTimeFrom.truncatedTo(ChronoUnit.DAYS).plusHours(16)));
+
+        if (doctor.getShift().equals(Shift.DAY) && (dateTimeFrom.isBefore(dateTimeFrom.truncatedTo(ChronoUnit.DAYS).plusHours(10)) || dateTimeFrom.isAfter(dateTimeFrom.truncatedTo(ChronoUnit.DAYS).plusHours(19))))
+            available = false;
+        if (doctor.getShift().equals(Shift.EVENING) && (dateTimeFrom.isBefore(dateTimeFrom.truncatedTo(ChronoUnit.DAYS).plusHours(14)) || dateTimeFrom.isAfter(dateTimeFrom.truncatedTo(ChronoUnit.DAYS).plusHours(23))))
+            available = false;
+
+        return available;
     }
 }

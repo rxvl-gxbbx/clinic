@@ -181,6 +181,8 @@ public class AppointmentService {
         if (optionalDoctor.isEmpty()) throw new DoctorNotFoundException();
         // без врача талон создать невозможно
         Doctor existed = optionalDoctor.get();
+        if (!ShiftUtil.isAvailable(appointment.getTime(), existed))
+            throw new AppointmentNotCreatedException("Невозможно создать талон! Врач работает c " + ShiftUtil.getShiftBegin(LocalDate.from(appointment.getTime()), existed).getHour() + " до " + ShiftUtil.getShiftEnd(LocalDate.from(appointment.getTime()), existed).getHour());
         appointment.setDoctor(existed);
         // устанавливаем двустороннюю связь
         existed.getAppointments().add(appointment);
@@ -226,10 +228,14 @@ public class AppointmentService {
         if (optionalAppointment.isEmpty()) throw new AppointmentNotFoundException();
 
         Appointment existedAppointment = optionalAppointment.get();
-
         Optional<Doctor> optionalDoctor = doctorRepository.findByUuid(updatedAppointment.getDoctor().getUuid());
 
         if (optionalDoctor.isEmpty()) throw new DoctorNotFoundException();
+
+        Doctor doctor = optionalDoctor.get();
+
+        if (!ShiftUtil.isAvailable(updatedAppointment.getTime(), doctor))
+            throw new AppointmentNotCreatedException("Невозможно обновить талон! Врач работает c " + ShiftUtil.getShiftBegin(LocalDate.from(updatedAppointment.getTime()), doctor).getHour() + " до " + ShiftUtil.getShiftEnd(LocalDate.from(updatedAppointment.getTime()), doctor).getHour());
         // если обновленному талону не было передано значения пациента, то остается прежний пациент
         if (updatedAppointment.getPatient() == null && existedAppointment.getPatient() != null)
             updatedAppointment.setPatient(existedAppointment.getPatient());
@@ -245,12 +251,11 @@ public class AppointmentService {
             existedPatient.getAppointments().remove(existedAppointment);
         }
 
-
-        updatedAppointment.setDoctor(optionalDoctor.get());
-
+        updatedAppointment.setDoctor(doctor);
         // устанавливаются двусторонние связи
         existedAppointment.getDoctor().getAppointments().remove(existedAppointment);
-        existedAppointment.getPatient().getAppointments().remove(existedAppointment);
+        if (existedAppointment.getPatient() != null)
+            existedAppointment.getPatient().getAppointments().remove(existedAppointment);
         existedAppointment.setPatient(null);
         existedAppointment.setDoctor(null);
 
